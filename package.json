@@ -1,0 +1,33 @@
+{
+  "name": "goodlife-autobook-script",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jawny/goodlife-autobook-script.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Jawny/goodlife-autobook-script/issues"
+  },
+  "homepage": "https://github.com/Jawny/goodlife-autobook-script#readme",
+  "dependencies": {
+    "axios": "^0.21.0",
+    "cryptr": "^6.0.2",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "form-data": "^3.0.0",
+    "http-proxy-middleware": "^1.0.6",
+    "moment": "^2.29.1",
+    "moment-timezone": "^0.5.31",
+    "mongodb": "^3.6.3",
+    "mongoose": "^5.10.13",
+    "node-cron": "^2.0.3"
+  }
+}
