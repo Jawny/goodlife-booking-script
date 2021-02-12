@@ -28,6 +28,7 @@ const run = async () => {
   const userDataSchema = new mongoose.Schema({
     email: String,
     password: String,
+    clubId: Number,
     monday: Number,
     tuesday: Number,
     wednesday: Number,
@@ -42,6 +43,7 @@ const run = async () => {
     for (const index in collection) {
       const currCollection = collection[index];
       const userEmail = currCollection["email"];
+      const clubId = currCollection["clubId"];
       const userPassword = cryptr.decrypt(currCollection["password"]);
       const userMonday = currCollection["monday"];
       const userTuesday = currCollection["tuesday"];
@@ -61,31 +63,91 @@ const run = async () => {
         7: userSunday,
       };
 
+      // const hourIntToString = {
+      //   0: null,
+      //   1: "06:00AM",
+      //   2: "07:00AM",
+      //   3: "07:30AM",
+      //   4: "08:00AM",
+      //   5: "08:30AM",
+      //   6: "09:00AM",
+      //   7: "10:00AM",
+      //   8: "10:30AM",
+      //   9: "11:00AM",
+      //   10: "11:30AM",
+      //   11: "12:00PM",
+      //   12: "01:00PM",
+      //   13: "01:30PM",
+      //   14: "02:30PM",
+      //   15: "03:00PM",
+      //   16: "04:00PM",
+      //   17: "04:30PM",
+      //   18: "05:30PM",
+      //   19: "06:00PM",
+      //   20: "07:00PM",
+      //   11: "07:30PM",
+      //   22: "09:00PM",
+      //   23: "10:30PM",
+      // };
+
+      // const hourIntToString = {
+      //   null: null,
+      //   0: null,
+      //   1: "06:00AM",
+      //   2: "07:15AM",
+      //   3: "08:30AM",
+      //   4: "09:45AM",
+      //   5: "11:00AM",
+      //   6: "12:15PM",
+      //   7: "01:30PM",
+      //   8: "02:45PM",
+      //   9: "04:00PM",
+      //   10: "05:15PM",
+      //   11: "06:30PM",
+      //   12: "07:45PM",
+      //   13: "09:00PM",
+      //   14: "10:15PM",
+      //   15: "11:15PM",
+      //   16: "07:00AM",
+      //   17: "08:15AM",
+      //   18: "09:30AM",
+      //   19: "10:45AM",
+      //   20: "12:00PM",
+      //   21: "01:15PM",
+      //   22: "02:30PM",
+      //   23: "03:45PM",
+      //   24: "05:00PM",
+      //   25: "06:15PM",
+      // };
+
       const hourIntToString = {
+        null: null,
         0: null,
-        6: "06:00AM",
-        7: "07:00AM",
-        7.5: "07:30AM",
-        8: "08:00AM",
-        8.5: "08:30AM",
-        9: "09:00AM",
-        10: "10:00AM",
-        10.5: "10:30AM",
-        11: "11:00AM",
-        11.5: "11:30AM",
-        12: "12:00PM",
-        13: "01:00PM",
-        13.5: "01:30PM",
-        14.5: "02:30PM",
-        15: "03:00PM",
-        16: "04:00PM",
-        16.5: "04:30PM",
-        17.5: "05:30PM",
-        18: "06:00PM",
-        19: "07:00PM",
-        19.5: "07:30PM",
-        21: "09:00PM",
-        22.5: "10:30PM",
+        1: null,
+        2: null,
+        3: null,
+        4: null,
+        5: null,
+        6: null,
+        7: null,
+        8: null,
+        9: null,
+        10: "05:00PM", // only valid
+        11: "06:15PM", // only valid
+        12: "07:30PM", // only valid
+        13: null,
+        14: null,
+        15: null,
+        16: null,
+        17: null,
+        18: null,
+        19: null,
+        20: null,
+        21: null,
+        22: null,
+        23: null,
+        24: null,
+        25: null,
       };
 
       // console.log(collection);
@@ -119,7 +181,8 @@ const run = async () => {
         bookYear,
         bookMonth,
         bookDay,
-        userHourToBook
+        userHourToBook,
+        clubId
       );
     }
   });
