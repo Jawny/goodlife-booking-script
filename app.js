@@ -7,9 +7,22 @@ require("moment-timezone");
 require("dotenv").config();
 const { CheckLoginCredentials } = require("./CheckLoginCredentials");
 const { GoodlifeAutoBook } = require("./index");
-const { provinceTimeslotsArr } = require("./constants");
+const { provinceTimeslotsArr, timezoneCheck } = require("./constants");
 
 const cryptr = new Cryptr(process.env.CRYPTR_KEY);
+const userDataSchema = new mongoose.Schema({
+  email: String,
+  password: String,
+  province: String,
+  clubId: Number,
+  monday: Number,
+  tuesday: Number,
+  wednesday: Number,
+  thursday: Number,
+  friday: Number,
+  saturday: Number,
+  sunday: Number,
+});
 
 const server = () => {
   app = express();
@@ -32,27 +45,18 @@ const run = async (timezone) => {
     { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false }
   );
 
-  const userDataSchema = new mongoose.Schema({
-    email: String,
-    password: String,
-    province: String,
-    clubId: Number,
-    monday: Number,
-    tuesday: Number,
-    wednesday: Number,
-    thursday: Number,
-    friday: Number,
-    saturday: Number,
-    sunday: Number,
-  });
-
   const userTable = mongoose.model("userdatas", userDataSchema);
   await userTable.find({}, async (err, collection) => {
     for (const index in collection) {
       const currCollection = collection[index];
+      const userProvince = currCollection["province"];
+      // Skip user if in the wrong timezone
+      if (!timezoneCheck[timezone].includes(userProvince.toUpperCase())) {
+        console.log("Different timezone");
+        continue;
+      }
       const userEmail = currCollection["email"];
       const userPassword = cryptr.decrypt(currCollection["password"]);
-      const userProvince = currCollection["province"];
       const clubId = currCollection["clubId"];
       const userMonday = currCollection["monday"];
       const userTuesday = currCollection["tuesday"];
@@ -75,12 +79,15 @@ const run = async (timezone) => {
       // console.log(collection);
       // date formatting
       const currentDate = moment().tz("America/Los_Angeles");
-      const bookDate = moment(currentDate, "YYYY-MM-DD").add(7, "days");
+      const bookDate =
+        timezone === "est"
+          ? moment(currentDate, "YYYY-MM-DD").add(7, "days")
+          : moment(currentDate, "YYYY-MM-DD").add(6, "days");
       const bookDay = bookDate.format("D");
       const bookMonth = bookDate.format("M");
       const bookYear = bookDate.format("YYYY");
       const currWeekday = bookDate.isoWeekday(); // 1 = monday 1-7
-      console.log("currWeekday:", currWeekday);
+      // console.log("currWeekday:", currWeekday);
 
       // Find correct hour to book
       const userHourInt = weekdays[currWeekday];
@@ -90,9 +97,9 @@ const run = async (timezone) => {
       );
       // console.log("provinceTimeSlots", provinceTimeSlots);
       const userHourToBook = provinceTimeSlots.hourIntToString[userHourInt];
-      console.log("userProvince", userProvince);
-      console.log("userHourInt:", userHourInt);
-      console.log("userHourTobook:", userHourToBook);
+      // console.log("userProvince", userProvince);
+      // console.log("userHourInt:", userHourInt);
+      // console.log("userHourTobook:", userHourToBook);
 
       const loginResult = await CheckLoginCredentials(userEmail, userPassword);
 
@@ -102,7 +109,9 @@ const run = async (timezone) => {
         await userTable.deleteOne({ email: userEmail, password: userPassword });
         continue;
       }
-      //   console.log(userHour);
+      console.log(
+        `going to book for ${bookYear}-${bookMonth}-${bookDay} at ${userHourToBook} in ${userProvince}`
+      );
       await GoodlifeAutoBook(
         userEmail,
         userPassword,
@@ -110,9 +119,7 @@ const run = async (timezone) => {
         bookMonth,
         bookDay,
         userHourToBook,
-        clubId,
-        userProvince,
-        timezone
+        clubId
       );
     }
   });

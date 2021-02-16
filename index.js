@@ -1,7 +1,6 @@
 const axios = require("axios");
 const moment = require("moment");
 const FormData = require("form-data");
-const { timezoneCheck } = require("./constants");
 
 const GOODLIFE_URL = "https://www.goodlifefitness.com/";
 
@@ -66,10 +65,10 @@ const getTimeSlotId = async (bookingTimes, hour) => {
       .format("hh:mm a")
       .replace(/\s/g, "")
       .toLowerCase();
-    console.log("formatted:", formattedBookingTime);
+    // console.log("formatted:", formattedBookingTime);
     const gymArea = bookingTimes[index]["gymArea"].toLowerCase();
     if (formattedBookingTime === hour && gymArea === "gym floor") {
-      console.log("found");
+      // console.log("found");
       return bookingTimes[index]["identifier"];
     }
   }
@@ -90,10 +89,14 @@ const bookWorkout = async (cookies, timeSlotId, clubId) => {
       cookie: cookies,
       "content-type": `multipart/form-data; boundary=${bookingDataForm._boundary}`,
     },
-  }).catch((err) => {
-    // console.log(err);
-    console.log("I BROKE HELP ME const bookWorkout");
-  });
+  })
+    .then(() => {
+      console.log("BOOKING SUCCESS");
+    })
+    .catch((err) => {
+      // console.log(err);
+      console.log("BOOKING FAILED");
+    });
 };
 
 const book = async (cookies, year, month, day, hour, clubId) => {
@@ -149,14 +152,8 @@ const GoodlifeAutoBook = async (
   month,
   day,
   hour,
-  clubId,
-  province,
-  timezone
+  clubId
 ) => {
-  if (!timezoneCheck[timezone].includes(province.toUpperCase())) {
-    console.log("Different timezone");
-    return;
-  }
   const loginToGoodlife = await login(username, password);
   // console.log("login headers:", loginToGoodlife.headers);
 
