@@ -7,19 +7,26 @@ require("moment-timezone");
 require("dotenv").config();
 const { CheckLoginCredentials } = require("./CheckLoginCredentials");
 const { GoodlifeAutoBook } = require("./index");
+const { provinceTimeslotsArr } = require("./constants");
 
 const cryptr = new Cryptr(process.env.CRYPTR_KEY);
 
 const server = () => {
   app = express();
-  // cron.schedule("0 0 * * *", () => {
-  run();
-  //  });
+  // run("pst");
+  cron.schedule("0 0 * * *", () => {
+    run("pst");
+  });
+
+  cron.schedule("0 22 * * *", () => {
+    run("est");
+  });
+
   console.log("server started");
   app.listen(8080);
 };
 
-const run = async () => {
+const run = async (timezone) => {
   mongoose.connect(
     `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0.kqhf8.mongodb.net/goodlife?retryWrites=true&w=majority`,
     { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false }
@@ -28,6 +35,8 @@ const run = async () => {
   const userDataSchema = new mongoose.Schema({
     email: String,
     password: String,
+    province: String,
+    clubId: Number,
     monday: Number,
     tuesday: Number,
     wednesday: Number,
@@ -43,6 +52,8 @@ const run = async () => {
       const currCollection = collection[index];
       const userEmail = currCollection["email"];
       const userPassword = cryptr.decrypt(currCollection["password"]);
+      const userProvince = currCollection["province"];
+      const clubId = currCollection["clubId"];
       const userMonday = currCollection["monday"];
       const userTuesday = currCollection["tuesday"];
       const userWednesday = currCollection["wednesday"];
@@ -61,33 +72,6 @@ const run = async () => {
         7: userSunday,
       };
 
-      const hourIntToString = {
-        0: null,
-        6: "06:00AM",
-        7: "07:00AM",
-        7.5: "07:30AM",
-        8: "08:00AM",
-        8.5: "08:30AM",
-        9: "09:00AM",
-        10: "10:00AM",
-        10.5: "10:30AM",
-        11: "11:00AM",
-        11.5: "11:30AM",
-        12: "12:00PM",
-        13: "01:00PM",
-        13.5: "01:30PM",
-        14.5: "02:30PM",
-        15: "03:00PM",
-        16: "04:00PM",
-        16.5: "04:30PM",
-        17.5: "05:30PM",
-        18: "06:00PM",
-        19: "07:00PM",
-        19.5: "07:30PM",
-        21: "09:00PM",
-        22.5: "10:30PM",
-      };
-
       // console.log(collection);
       // date formatting
       const currentDate = moment().tz("America/Los_Angeles");
@@ -100,7 +84,13 @@ const run = async () => {
 
       // Find correct hour to book
       const userHourInt = weekdays[currWeekday];
-      const userHourToBook = hourIntToString[userHourInt];
+      const provinceTimeSlots = provinceTimeslotsArr.find(
+        (province) =>
+          province.province.toLowerCase() === userProvince.toLowerCase()
+      );
+      // console.log("provinceTimeSlots", provinceTimeSlots);
+      const userHourToBook = provinceTimeSlots.hourIntToString[userHourInt];
+      console.log("userProvince", userProvince);
       console.log("userHourInt:", userHourInt);
       console.log("userHourTobook:", userHourToBook);
 
@@ -119,7 +109,10 @@ const run = async () => {
         bookYear,
         bookMonth,
         bookDay,
-        userHourToBook
+        userHourToBook,
+        clubId,
+        userProvince,
+        timezone
       );
     }
   });
