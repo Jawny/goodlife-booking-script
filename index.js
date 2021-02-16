@@ -1,6 +1,8 @@
 const axios = require("axios");
 const moment = require("moment");
 const FormData = require("form-data");
+const { timezoneCheck } = require("./constants");
+
 const GOODLIFE_URL = "https://www.goodlifefitness.com/";
 
 const login = async (username, password) => {
@@ -147,8 +149,14 @@ const GoodlifeAutoBook = async (
   month,
   day,
   hour,
-  clubId
+  clubId,
+  province,
+  timezone
 ) => {
+  if (!timezoneCheck[timezone].includes(province.toUpperCase())) {
+    console.log("Different timezone");
+    return;
+  }
   const loginToGoodlife = await login(username, password);
   // console.log("login headers:", loginToGoodlife.headers);
 
