@@ -18,7 +18,7 @@ const server = () => {
     run("pst");
   });
 
-  cron.schedule("0 22 * * *", () => {
+  cron.schedule("0 21 * * *", () => {
     run("est");
   });
 
