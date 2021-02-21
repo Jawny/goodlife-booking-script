@@ -4,7 +4,7 @@ const FormData = require("form-data");
 
 const GOODLIFE_URL = "https://www.goodlifefitness.com/";
 
-const login = async (username, password) => {
+const login = async (username, password, retries = 0) => {
   const loginFormData = new FormData();
   loginFormData.append("login", username);
   loginFormData.append("passwordParameter", password);
@@ -19,7 +19,10 @@ const login = async (username, password) => {
       "content-type": `multipart/form-data; boundary=${loginFormData._boundary}`,
     },
   }).catch((err) => {
-    console.log(err);
+    if (retries <= 3) {
+      console.log(`Failed to login for ${username} on retry ${retries}`);
+      setTimeout(login, 10000, username, password, retries + 1);
+    }
   });
 };
 
@@ -74,7 +77,7 @@ const getTimeSlotId = async (bookingTimes, hour) => {
   }
 };
 
-const bookWorkout = async (cookies, timeSlotId, clubId) => {
+const bookWorkout = async (cookies, timeSlotId, clubId, retries = 0) => {
   const bookingDataForm = new FormData();
   bookingDataForm.append("clubId", clubId);
   bookingDataForm.append("timeSlotId", timeSlotId);
@@ -94,12 +97,12 @@ const bookWorkout = async (cookies, timeSlotId, clubId) => {
       console.log("BOOKING SUCCESS");
     })
     .catch((err) => {
-      // console.log(err);
+      setTimeout(bookWorkout, 10000, cookies, timeSlotId, clubId, retries + 1);
       console.log("BOOKING FAILED");
     });
 };
 
-const book = async (cookies, year, month, day, hour, clubId) => {
+const book = async (cookies, year, month, day, hour, clubId, retries = 0) => {
   const formattedDay = checkIfZeroNeeded(day);
   const formattedMonth = checkIfZeroNeeded(month);
   console.log(clubId);
@@ -117,10 +120,23 @@ const book = async (cookies, year, month, day, hour, clubId) => {
       headers
     )
     .catch((err) => {
-      console.log("sad");
+      if (retryCount <= 3) {
+        setTimeout(
+          book,
+          10000,
+          cookies,
+          year,
+          month,
+          day,
+          hour,
+          clubId,
+          retries + 1
+        );
+      }
+      console.log("err");
     });
   // console.log("bookingList:", bookingList);
-  const bookingListDataResponse = bookingList.data["map"]["response"];
+  const bookingListDataResponse = await bookingList.data["map"]["response"];
   // console.log("booking List:", bookingListDataResponse);
 
   // merge all workout arrays into one single array

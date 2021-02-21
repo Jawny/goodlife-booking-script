@@ -26,14 +26,22 @@ const userDataSchema = new mongoose.Schema({
 
 const server = () => {
   app = express();
-  // run("pst");
+  // run("est");
   cron.schedule("0 0 * * *", () => {
     run("pst");
   });
 
-  cron.schedule("0 21 * * *", () => {
+  cron.schedule("2 21 * * *", () => {
     run("est");
   });
+
+  // cron.schedule("*/2 * * * *", () => {
+  //   run("pst");
+  // });
+
+  // cron.schedule("*/3 * * * *", () => {
+  //   run("est");
+  // });
 
   console.log("server started");
   app.listen(8080);
