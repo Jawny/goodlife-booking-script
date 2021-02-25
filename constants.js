@@ -70,10 +70,12 @@ const provinceTimeslotsArr = [
 ];
 
 const timezoneCheck = { est: ["ON"], pst: ["BC"] };
+const goodlifeUrl = "https://www.goodlifefitness.com/";
 
 module.exports = {
   provinceTimeslotsArr,
   timezoneCheck,
+  goodlifeUrl,
 };
 
 // ** OUTDATED  Keeping in case Goodlife Reverts back
