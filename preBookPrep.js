@@ -3,7 +3,7 @@ require("moment-timezone");
 const mongoose = require("mongoose");
 const moment = require("moment");
 const Cryptr = require("cryptr");
-const { provinceTimeslotsArr } = require("./constants");
+const { provinceTimeslotsArr, timezoneCheck } = require("./constants");
 const {
   checkIfZeroNeeded,
   verifyLoginCredentials,
@@ -15,7 +15,7 @@ const {
 
 const cryptr = new Cryptr(process.env.CRYPTR_KEY);
 
-const preBookPrep = async (schema) => {
+const preBookPrep = async (schema, timezone) => {
   const userTable = mongoose.model("userdatas", schema);
   let usersToBook = [];
 
@@ -42,6 +42,11 @@ const preBookPrep = async (schema) => {
         6: userSaturday,
         7: userSunday,
       };
+
+      if (!timezoneCheck[timezone].includes(userProvince)) {
+        console.log("User is in a different timezone");
+        continue;
+      }
 
       // Format dates
       const currentDate = moment().tz("America/Los_Angeles");
