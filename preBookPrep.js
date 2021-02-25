@@ -43,6 +43,7 @@ const preBookPrep = async (schema, timezone) => {
         7: userSunday,
       };
 
+      // Verify that the current user in collection should be booked at this time.
       if (!timezoneCheck[timezone].includes(userProvince)) {
         console.log("User is in a different timezone");
         continue;
