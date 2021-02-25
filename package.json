@@ -29,5 +29,8 @@
     "mongodb": "^3.6.3",
     "mongoose": "^5.10.13",
     "node-cron": "^2.0.3"
+  },
+  "devDependencies": {
+    "eslint": "^7.20.0"
   }
 }

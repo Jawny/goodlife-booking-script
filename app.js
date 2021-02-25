@@ -5,10 +5,9 @@ const express = require("express");
 const Cryptr = require("cryptr");
 require("moment-timezone");
 require("dotenv").config();
-const { CheckLoginCredentials } = require("./CheckLoginCredentials");
 const { GoodlifeAutoBook } = require("./index");
 const { provinceTimeslotsArr, timezoneCheck } = require("./constants");
-
+const { preBookPrep } = require("./preBookPrep");
 const cryptr = new Cryptr(process.env.CRYPTR_KEY);
 const userDataSchema = new mongoose.Schema({
   email: String,
@@ -23,17 +22,22 @@ const userDataSchema = new mongoose.Schema({
   saturday: Number,
   sunday: Number,
 });
+mongoose.connect(
+  `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0.kqhf8.mongodb.net/goodlife?retryWrites=true&w=majority`,
+  { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false }
+);
 
 const server = () => {
   app = express();
+  run();
   // run("est");
-  cron.schedule("0 0 * * *", () => {
-    run("pst");
-  });
+  // cron.schedule("0 0 * * *", () => {
+  //   run("pst");
+  // });
 
-  cron.schedule("2 21 * * *", () => {
-    run("est");
-  });
+  // cron.schedule("2 21 * * *", () => {
+  //   run("est");
+  // });
 
   // cron.schedule("*/2 * * * *", () => {
   //   run("pst");
@@ -47,12 +51,12 @@ const server = () => {
   app.listen(8080);
 };
 
-const run = async (timezone) => {
-  mongoose.connect(
-    `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0.kqhf8.mongodb.net/goodlife?retryWrites=true&w=majority`,
-    { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false }
-  );
-
+const run = async () => {
+  const poo = await preBookPrep(userDataSchema);
+  setTimeout(function () {
+    console.log("pee", poo);
+  }, 10000);
+  return;
   const userTable = mongoose.model("userdatas", userDataSchema);
   await userTable.find({}, async (err, collection) => {
     for (const index in collection) {
