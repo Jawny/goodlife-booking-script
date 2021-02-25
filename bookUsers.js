@@ -1,7 +1,9 @@
-const { bookWorkout } = "./utils/index.js";
+const { bookWorkout } = require("./utils/index");
 
 const bookUsers = async (usersArray) => {
-  usersArray.forEach(async (user) => {
+  const resolvedUsersArray = await usersArray;
+
+  resolvedUsersArray.forEach(async (user) => {
     const { cookies, timeSlot, clubId } = user;
     const bookWorkoutResponse = await bookWorkout(cookies, timeSlot, clubId);
 

@@ -51,7 +51,12 @@ const preBookPrep = async (schema, timezone) => {
 
       // Format dates
       const currentDate = moment().tz("America/Los_Angeles");
-      const bookDate = moment(currentDate, "YYYY-MM-DD").add(7, "days");
+      // TODO CONVERT ALL MOMENTS TO ACCEPT A OFFSET TO NOT NEED TERNARY STATEMENTS
+      const bookDate = moment(currentDate, "YYYY-MM-DD").add(
+        timezoneCheck === "est" ? 6 : 7,
+        "days"
+      );
+      // const bookDate = moment("2021-03-03", "YYYY-MM-DD");
       const bookDay = checkIfZeroNeeded(bookDate.format("D"));
       const bookMonth = checkIfZeroNeeded(bookDate.format("M"));
       const bookYear = bookDate.format("YYYY");
