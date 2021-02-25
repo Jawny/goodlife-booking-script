@@ -5,6 +5,7 @@ const express = require("express");
 const { preBookPrep } = require("./preBookPrep");
 const { bookUsers } = require("./bookUsers");
 
+const PORT = process.env.PORT || 8080;
 const userDataSchema = new mongoose.Schema({
   email: String,
   password: String,
@@ -52,8 +53,8 @@ const server = () => {
     bookUsers(usersToBookArray);
   });
 
-  console.log("server started");
-  app.listen(8080);
+  console.log(`server started on port ${PORT}`);
+  app.listen(PORT);
 };
 
 server();
