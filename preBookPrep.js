@@ -1,4 +1,5 @@
 require("dotenv").config();
+require("moment-timezone");
 const mongoose = require("mongoose");
 const moment = require("moment");
 const Cryptr = require("cryptr");
@@ -73,10 +74,13 @@ const preBookPrep = async (schema) => {
       //     continue;
       //   }
 
+      // Check if login was successful and create object with cookies, timeSlot and clubId.
       if (loginResult.status === 200) {
         const cookies = await getCookies(loginResult);
         const userhour = userHourToBook.toLowerCase();
         const headers = { headers: { cookie: cookies } };
+
+        // Get all available timeslots for specified day
         const bookingList = await getBookingList(
           clubId,
           bookYear,
@@ -90,6 +94,7 @@ const preBookPrep = async (schema) => {
           continue;
         }
 
+        // Get the timeslots for the specified booking day
         const bookingTimes = await getBookingTimes(
           bookingList,
           bookYear,

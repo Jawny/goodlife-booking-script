@@ -1,4 +1,5 @@
 const axios = require("axios");
+const FormData = require("form-data");
 const { goodlifeUrl } = require("../constants");
 
 const bookWorkout = async (cookies, timeSlotId, clubId, retries = 0) => {
@@ -6,7 +7,7 @@ const bookWorkout = async (cookies, timeSlotId, clubId, retries = 0) => {
   bookingDataForm.append("clubId", clubId);
   bookingDataForm.append("timeSlotId", timeSlotId);
   // console.log("boundary", bookingDataForm);
-  await axios({
+  return await axios({
     method: "post",
     url:
       goodlifeUrl +
@@ -16,23 +17,9 @@ const bookWorkout = async (cookies, timeSlotId, clubId, retries = 0) => {
       cookie: cookies,
       "content-type": `multipart/form-data; boundary=${bookingDataForm._boundary}`,
     },
-  })
-    .then(() => {
-      console.log("BOOKING SUCCESS");
-    })
-    .catch((err) => {
-      if (retries <= 3) {
-        console.log("BOOKING FAILED");
-        setTimeout(
-          bookWorkout,
-          10000,
-          cookies,
-          timeSlotId,
-          clubId,
-          retries + 1
-        );
-      }
-    });
+  }).catch((err) => {
+    return err.response;
+  });
 };
 
 module.exports = {
