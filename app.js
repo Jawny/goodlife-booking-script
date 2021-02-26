@@ -32,24 +32,24 @@ const server = () => {
 
   // 11:55PM EST The server is using PST time so account for timezone difference -3 hours
   // Run at 11:55PM EST to build array of users to book
-  cron.schedule("50 20 * * *", () => {
+  cron.schedule("50 4 * * *", () => {
     usersToBookArray = preBookPrep(userDataSchema, "est");
   });
 
   // Run at 12:00AM EST to book all users
-  cron.schedule("0 21 * * *", () => {
+  cron.schedule("0 5 * * *", () => {
     bookUsers(usersToBookArray);
   });
 
   // TODO FIND A BETTER METHOD FOR THIS TIME ZONE DIFFERENCE
   // Consider using 6 GMT timezones for Canada
   // Run at 11:50PM PST to build array of users to book
-  cron.schedule("50 23 * * *", () => {
+  cron.schedule("50 7 * * *", () => {
     usersToBookArray = preBookPrep(userDataSchema, "pst");
   });
 
   // Run at 12:00AM PST to book all users
-  cron.schedule("0 0 * * *", () => {
+  cron.schedule("0 8 * * *", () => {
     bookUsers(usersToBookArray);
   });
 
