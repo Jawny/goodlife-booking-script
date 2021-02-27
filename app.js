@@ -37,8 +37,9 @@ const server = () => {
   });
 
   // Run at 12:00AM EST to book all users
-  cron.schedule("0 5 * * *", () => {
-    bookUsers(usersToBookArray);
+  cron.schedule("0 5 * * *", async () => {
+    await bookUsers(usersToBookArray);
+    await mongoose.disconnect();
   });
 
   // TODO FIND A BETTER METHOD FOR THIS TIME ZONE DIFFERENCE
@@ -49,8 +50,9 @@ const server = () => {
   });
 
   // Run at 12:00AM PST to book all users
-  cron.schedule("0 8 * * *", () => {
-    bookUsers(usersToBookArray);
+  cron.schedule("0 8 * * *", async () => {
+    await bookUsers(usersToBookArray);
+    await mongoose.disconnect();
   });
 
   console.log(`server started on port ${PORT}`);
