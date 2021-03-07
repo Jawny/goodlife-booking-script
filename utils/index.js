@@ -4,8 +4,8 @@ const { getBookingList } = require("./getBookingList");
 const { getBookingTimes } = require("./getBookingTimes");
 const { getCookies } = require("./getCookies");
 const { getTimeSlotId } = require("./getTimeSlotId");
-const { login } = require("./login");
 const { verifyLoginCredentials } = require("./verifyLoginCredentials");
+const { verifySubStatus } = require("./verifySubStatus");
 
 module.exports = {
   bookWorkout,
@@ -14,6 +14,6 @@ module.exports = {
   getBookingTimes,
   getCookies,
   getTimeSlotId,
-  login,
   verifyLoginCredentials,
+  verifySubStatus,
 };

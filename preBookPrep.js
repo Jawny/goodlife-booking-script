@@ -1,12 +1,14 @@
 require("dotenv").config();
 require("moment-timezone");
 const mongoose = require("mongoose");
+const { isEmpty, isNil } = require("lodash");
 const moment = require("moment");
 const Cryptr = require("cryptr");
 const { provinceTimeslotsArr, timezoneCheck } = require("./constants");
 const {
   checkIfZeroNeeded,
   verifyLoginCredentials,
+  verifySubStatus,
   getCookies,
   getTimeSlotId,
   getBookingList,
@@ -22,17 +24,40 @@ const preBookPrep = async (schema, timezone) => {
   await userTable.find({}, async (err, collection) => {
     for (const index in collection) {
       const currCollection = collection[index];
-      const userProvince = currCollection["province"];
-      const userEmail = currCollection["email"];
-      const userPassword = cryptr.decrypt(currCollection["password"]);
-      const clubId = currCollection["clubId"];
-      const userMonday = currCollection["monday"];
-      const userTuesday = currCollection["tuesday"];
-      const userWednesday = currCollection["wednesday"];
-      const userThursday = currCollection["thursday"];
-      const userFriday = currCollection["friday"];
-      const userSaturday = currCollection["saturday"];
-      const userSunday = currCollection["sunday"];
+      const paymentObject = currCollection["payment"];
+      // filter out users who have no payments
+      if (isEmpty(JSON.parse(JSON.stringify(paymentObject)))) {
+        continue;
+      }
+
+      // filter out users with no subId
+      const subId = paymentObject["subId"];
+      if (isNil(subId)) {
+        continue;
+      }
+
+      // If subscription is not active then skip
+      const verifyStatus = await verifySubStatus(subId);
+      if (!verifyStatus) {
+        continue;
+      }
+
+      // filter out users without a goodlife schedule setup
+      const goodlifeObject = currCollection["goodlife"];
+      if (isEmpty(JSON.parse(JSON.stringify(goodlifeObject)))) {
+        continue;
+      }
+      const userProvince = goodlifeObject["province"];
+      const userEmail = goodlifeObject["email"];
+      const userPassword = cryptr.decrypt(goodlifeObject["password"]);
+      const clubId = goodlifeObject["clubId"];
+      const userMonday = goodlifeObject["monday"];
+      const userTuesday = goodlifeObject["tuesday"];
+      const userWednesday = goodlifeObject["wednesday"];
+      const userThursday = goodlifeObject["thursday"];
+      const userFriday = goodlifeObject["friday"];
+      const userSaturday = goodlifeObject["saturday"];
+      const userSunday = goodlifeObject["sunday"];
       const weekdays = {
         1: userMonday,
         2: userTuesday,
