@@ -23,27 +23,40 @@ const preBookPrep = async (schema, timezone) => {
 
   await userTable.find({}, async (err, collection) => {
     for (const index in collection) {
-      const currCollection = collection[index];
+      const currCollectionRaw = collection[index];
+      const currCollection = JSON.parse(JSON.stringify(currCollectionRaw));
       const paymentObject = currCollection["payment"];
+
+      if (isEmpty(paymentObject)) {
+        console.log("empty 1", paymentObject);
+        continue;
+      }
       // filter out users who have no payments
       if (isEmpty(JSON.parse(JSON.stringify(paymentObject)))) {
+        console.log("empty 2");
         continue;
       }
 
       // filter out users with no subId
       const subId = paymentObject["subId"];
       if (isNil(subId)) {
+        console.log("no sub id");
         continue;
       }
 
       // If subscription is not active then skip
       const verifyStatus = await verifySubStatus(subId);
       if (!verifyStatus) {
+        console.log("unverified");
         continue;
       }
 
       // filter out users without a goodlife schedule setup
       const goodlifeObject = currCollection["goodlife"];
+      if (isEmpty(goodlifeObject)) {
+        continue;
+      }
+
       if (isEmpty(JSON.parse(JSON.stringify(goodlifeObject)))) {
         continue;
       }
@@ -77,11 +90,11 @@ const preBookPrep = async (schema, timezone) => {
       // Format dates
       const currentDate = moment().tz("America/Los_Angeles");
       // TODO CONVERT ALL MOMENTS TO ACCEPT A OFFSET TO NOT NEED TERNARY STATEMENTS
-      const bookDate = moment(currentDate, "YYYY-MM-DD").add(
-        timezoneCheck === "est" ? 6 : 7,
-        "days"
-      );
-      // const bookDate = moment("2021-03-03", "YYYY-MM-DD");
+      // const bookDate = moment(currentDate, "YYYY-MM-DD").add(
+      //   timezoneCheck === "est" ? 2 : 3,
+      //   "days"
+      // );
+      const bookDate = moment("2021-03-03", "YYYY-MM-DD");
       const bookDay = checkIfZeroNeeded(bookDate.format("D"));
       const bookMonth = checkIfZeroNeeded(bookDate.format("M"));
       const bookYear = bookDate.format("YYYY");
@@ -115,7 +128,7 @@ const preBookPrep = async (schema, timezone) => {
         const cookies = await getCookies(loginResult);
         const userhour = userHourToBook.toLowerCase();
         const headers = { headers: { cookie: cookies } };
-
+        console.log(userhour, typeof userhour);
         // Get all available timeslots for specified day
         const bookingList = await getBookingList(
           clubId,
@@ -145,8 +158,9 @@ const preBookPrep = async (schema, timezone) => {
 
         const timeSlot = await getTimeSlotId(bookingTimes, userhour);
 
-        const userToBook = { cookies, timeSlot, clubId };
+        const userToBook = { cookies, timeSlot, clubId, userhour };
         usersToBook.push(userToBook);
+        console.log("DONE");
       }
     }
   });
