@@ -158,7 +158,13 @@ const preBookPrep = async (schema, timezone) => {
 
         const timeSlot = await getTimeSlotId(bookingTimes, userhour);
 
-        const userToBook = { cookies, timeSlot, clubId, userhour };
+        const userToBook = {
+          cookies,
+          timeSlot,
+          clubId,
+          userhour,
+          userProvince,
+        };
         usersToBook.push(userToBook);
         console.log("DONE");
       }

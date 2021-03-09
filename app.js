@@ -31,15 +31,16 @@ const server = () => {
   app = express();
 
   let usersToBookArray = [];
-  // const test = [
-  //   {
-  //     cookie: "cookie",
-  //     timeSlot: "123",
-  //     clubId: "1231",
-  //     userhour: "01:15am",
-  //   },
-  // ];
-  // filterPreBookPrep(test, moment());
+  const test = [
+    {
+      cookie: "cookie",
+      timeSlot: "123",
+      clubId: "1231",
+      userhour: "01:15am",
+      userProvince: "BC",
+    },
+  ];
+  filterPreBookPrep(test, moment());
 
   // usersToBookArray = preBookPrep(userDataSchema, "pst");
   // 11:55PM EST The server is using PST time so account for timezone difference -3 hours
