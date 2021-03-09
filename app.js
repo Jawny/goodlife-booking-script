@@ -1,9 +1,11 @@
 require("dotenv").config();
 const mongoose = require("mongoose");
+const moment = require("moment");
 const cron = require("node-cron");
 const express = require("express");
 const { preBookPrep } = require("./preBookPrep");
 const { bookUsers } = require("./bookUsers");
+const { filterPreBookPrep } = require("./filterPreBookPrep");
 
 const PORT = process.env.PORT || 8080;
 const userDataSchema = new mongoose.Schema({
@@ -28,30 +30,33 @@ mongoose.connect(
 const server = () => {
   app = express();
 
-  let usersToBookArray = [];
+  let prePrepArray;
+  let filteredPrePrepArray;
+  // const test = [
+  //   {
+  //     cookie: "cookie",
+  //     timeSlot: "123",
+  //     clubId: "1231",
+  //     userhour: "01:15am",
+  //     userProvince: "BC",
+  //   },
+  // ];
+  // filterPreBookPrep(test, moment());
 
-  // 11:55PM EST The server is using PST time so account for timezone difference -3 hours
-  // Run at 11:55PM EST to build array of users to book
-  cron.schedule("50 4 * * *", () => {
-    usersToBookArray = preBookPrep(userDataSchema, "est");
+  // Login and generate array of users our users at 9am utc or 4am est (arbitrary time)
+  cron.schedule("0 9 * * *", () => {
+    prePrepArray = preBookPrep(userDataSchema);
   });
 
-  // Run at 12:00AM EST to book all users
-  cron.schedule("0 5 * * *", async () => {
-    await bookUsers(usersToBookArray);
+  // Run every 13 minutes after 10am utc or 5am est
+  cron.schedule("*/13 10 * * *", async () => {
+    filteredPrePrepArray = await filterPreBookPrep(prePrepArray);
     // await mongoose.disconnect();
   });
 
-  // TODO FIND A BETTER METHOD FOR THIS TIME ZONE DIFFERENCE
-  // Consider using 6 GMT timezones for Canada
-  // Run at 11:50PM PST to build array of users to book
-  cron.schedule("50 7 * * *", () => {
-    usersToBookArray = preBookPrep(userDataSchema, "pst");
-  });
-
-  // Run at 12:00AM PST to book all users
-  cron.schedule("0 8 * * *", async () => {
-    await bookUsers(usersToBookArray);
+  // Run every 15 minutes after 10am utc or 5am est
+  cron.schedule("*/15 10 * * *", async () => {
+    await bookUsers(filteredPrePrepArray);
     // await mongoose.disconnect();
   });
 
