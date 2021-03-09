@@ -27,21 +27,14 @@ const filterPreBookPrep = (arr, currTime) => {
     const userHourToMoment = moment.tz(userhour, "hh:mm A", timezone);
     const userHourTimeOnly = userHourToMoment.utc().format("hh:mm");
 
-    console.log("user:", userHourToMoment, userHourTimeOnly);
-    // const userHour = arr[index]["userhour"];
-    // const userHourMoment = moment(userHour, "hh:mm A");
-    // console.log("moment pst", userHourMoment);
-    // const userHourMomentUtc = moment.utc(userHourMoment).format();
-    // console.log("moment utc", userHourMomentUtc);
-    // const userHourMomentUtcToString = moment(userHourMomentUtc).format(
-    //   "hh:mm A"
-    // );
-    // console.log("moment as time string", userHourMomentUtcToString);
-    // const formattedTime = nearestFifteenInterval.replace(/\s/g, "");
-
-    // if (formattedTime == userHour) {
-    //   newBookings.push(arr[index]);
-    // }
+    if (nearestFifteenInterval === userHourTimeOnly) {
+      console.log(
+        "Matched Booking Time",
+        nearestFifteenInterval,
+        userHourTimeOnly
+      );
+      newBookings.push(arr[index]);
+    }
   }
 
   return newBookings;

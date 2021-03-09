@@ -17,7 +17,7 @@ const {
 
 const cryptr = new Cryptr(process.env.CRYPTR_KEY);
 
-const preBookPrep = async (schema, timezone) => {
+const preBookPrep = async (schema) => {
   const userTable = mongoose.model("userdatas", schema);
   let usersToBook = [];
 
@@ -82,19 +82,19 @@ const preBookPrep = async (schema, timezone) => {
       };
 
       // Verify that the current user in collection should be booked at this time.
-      if (!timezoneCheck[timezone].includes(userProvince)) {
-        console.log("User is in a different timezone");
-        continue;
-      }
+      // if (!timezoneCheck[timezone].includes(userProvince)) {
+      //   console.log("User is in a different timezone");
+      //   continue;
+      // }
 
       // Format dates
       const currentDate = moment().tz("America/Los_Angeles");
       // TODO CONVERT ALL MOMENTS TO ACCEPT A OFFSET TO NOT NEED TERNARY STATEMENTS
-      // const bookDate = moment(currentDate, "YYYY-MM-DD").add(
-      //   timezoneCheck === "est" ? 2 : 3,
-      //   "days"
-      // );
-      const bookDate = moment("2021-03-03", "YYYY-MM-DD");
+      const bookDate = moment(currentDate, "YYYY-MM-DD").add(
+        userProvince.toLowerCase() === "on" ? 2 : 3,
+        "days"
+      );
+      // const bookDate = moment("2021-03-03", "YYYY-MM-DD");
       const bookDay = checkIfZeroNeeded(bookDate.format("D"));
       const bookMonth = checkIfZeroNeeded(bookDate.format("M"));
       const bookYear = bookDate.format("YYYY");
@@ -166,7 +166,6 @@ const preBookPrep = async (schema, timezone) => {
           userProvince,
         };
         usersToBook.push(userToBook);
-        console.log("DONE");
       }
     }
   });
