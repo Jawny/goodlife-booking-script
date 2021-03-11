@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const { isEmpty, isNil } = require("lodash");
 const moment = require("moment");
 const Cryptr = require("cryptr");
-const { provinceTimeslotsArr, timezoneCheck } = require("./constants");
+const { provinceTimeslotsArr, timezoneCheck, keys } = require("./constants");
 const {
   checkIfZeroNeeded,
   verifyLoginCredentials,
@@ -19,7 +19,7 @@ const cryptr = new Cryptr(process.env.CRYPTR_KEY);
 
 const preBookPrep = async (schema) => {
   const userTable = mongoose.model("userdatas", schema);
-  let usersToBook = [];
+  const usersToBook = keys.reduce((acc, curr) => ((acc[curr] = []), acc), {});
 
   await userTable.find({}, async (err, collection) => {
     for (const index in collection) {
@@ -91,10 +91,10 @@ const preBookPrep = async (schema) => {
       const currentDate = moment().tz("America/Los_Angeles");
       // TODO CONVERT ALL MOMENTS TO ACCEPT A OFFSET TO NOT NEED TERNARY STATEMENTS
       const bookDate = moment(currentDate, "YYYY-MM-DD").add(
-        userProvince.toLowerCase() === "on" ? 2 : 3,
+        userProvince.toLowerCase() === "on" ? 3 : 3,
         "days"
       );
-      // const bookDate = moment("2021-03-03", "YYYY-MM-DD");
+      // const bookDate = moment("2021-03-08", "YYYY-MM-DD");
       const bookDay = checkIfZeroNeeded(bookDate.format("D"));
       const bookMonth = checkIfZeroNeeded(bookDate.format("M"));
       const bookYear = bookDate.format("YYYY");
@@ -128,7 +128,7 @@ const preBookPrep = async (schema) => {
         const cookies = await getCookies(loginResult);
         const userhour = userHourToBook.toLowerCase();
         const headers = { headers: { cookie: cookies } };
-        console.log(userhour, typeof userhour);
+
         // Get all available timeslots for specified day
         const bookingList = await getBookingList(
           clubId,
@@ -165,11 +165,18 @@ const preBookPrep = async (schema) => {
           userhour,
           userProvince,
         };
-        usersToBook.push(userToBook);
+        let normalizedUserHour = userhour.toUpperCase();
+        if (userProvince.toLowerCase() === "on") {
+          normalizedUserHour = moment(userhour, "hh:mmA")
+            .subtract(3, "hours")
+            .format("hh:mmA");
+        }
+
+        console.log("key", normalizedUserHour, "province:", userProvince);
+        usersToBook[normalizedUserHour].push(userToBook);
       }
     }
   });
-
   return usersToBook;
 };
 
