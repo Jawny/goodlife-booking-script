@@ -59,9 +59,9 @@ const server = async () => {
     { timezone: "America/Los_Angeles" }
   );
 
-  // Run every 13 minutes after 10am utc or 5am est
+  // Run every hour starting from 1am
   cron.schedule(
-    "0 0-23 * * *",
+    "0 1-23 * * *",
     async () => {
       const currTime = moment().tz("America/Los_Angeles").format("hh:mmA");
       console.log(
@@ -73,9 +73,9 @@ const server = async () => {
     { timezone: "America/Los_Angeles" }
   );
 
-  // Run every 15 minutes after 10am utc or 5am est
+  // Run every 15 minutes after every hour starting from 1am
   cron.schedule(
-    "15 0-23 * * *",
+    "15 1-23 * * *",
     async () => {
       const currTime = moment().tz("America/Los_Angeles").format("hh:mmA");
       console.log(
