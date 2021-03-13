@@ -87,6 +87,31 @@ const server = async () => {
     { timezone: "America/Los_Angeles" }
   );
 
+  cron.schedule(
+    "30 1-23 * * *",
+    async () => {
+      const currTime = moment().tz("America/Los_Angeles").format("hh:mmA");
+      console.log(
+        `Booking at ${currTime} for ${preppedObj[currTime].length} users`
+      );
+      await bookUsers(preppedObj[currTime]);
+      // await mongoose.disconnect();
+    },
+    { timezone: "America/Los_Angeles" }
+  );
+
+  cron.schedule(
+    "45 1-23 * * *",
+    async () => {
+      const currTime = moment().tz("America/Los_Angeles").format("hh:mmA");
+      console.log(
+        `Booking at ${currTime} for ${preppedObj[currTime].length} users`
+      );
+      await bookUsers(preppedObj[currTime]);
+      // await mongoose.disconnect();
+    },
+    { timezone: "America/Los_Angeles" }
+  );
   console.log(`server started on port ${PORT}`);
   app.listen(PORT);
 };
