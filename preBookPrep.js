@@ -156,7 +156,11 @@ const preBookPrep = async (schema) => {
           continue;
         }
 
-        const timeSlot = await getTimeSlotId(bookingTimes, userhour);
+        let timeSlot = await getTimeSlotId(bookingTimes, userhour);
+
+        if (clubId === 128) {
+          timeSlot = await getTimeSlotId(bookingTimes, userhour, "for women");
+        }
 
         const userToBook = {
           cookies,

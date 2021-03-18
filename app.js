@@ -51,7 +51,7 @@ const server = async () => {
 
   // Login and generate array of users at 12am
   cron.schedule(
-    "0 0 * * *",
+    "12 0-23 * * *",
     async () => {
       console.log("preparing data");
       preppedObj = await preBookPrep(userDataSchema);
