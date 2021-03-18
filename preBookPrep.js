@@ -17,7 +17,7 @@ const {
 
 const cryptr = new Cryptr(process.env.CRYPTR_KEY);
 
-const preBookPrep = async (schema) => {
+const preBookPrep = async (schema, currTime = null) => {
   const userTable = mongoose.model("userdatas", schema);
   const usersToBook = keys.reduce((acc, curr) => ((acc[curr] = []), acc), {});
 
@@ -113,6 +113,24 @@ const preBookPrep = async (schema) => {
         continue;
       }
 
+      if (currTime != null) {
+        const userhourKey = userHourToBook.toUpperCase();
+        const remainder = 15 - (currTime.minute() % 15);
+        const nextBookingTime = moment(currTime).add(remainder, "minutes");
+        const nextBookingTimeKey = moment(nextBookingTime)
+          .tz("America/Los_Angeles")
+          .format("hh:mmA");
+        console.log(remainder, nextBookingTimeKey);
+        console.log(
+          userhourKey != nextBookingTimeKey,
+          userhourKey,
+          nextBookingTimeKey
+        );
+        if (userhourKey != nextBookingTimeKey) {
+          continue;
+        }
+      }
+
       const loginResult = await verifyLoginCredentials(userEmail, userPassword);
       console.log("login status", loginResult.status);
 
@@ -176,7 +194,14 @@ const preBookPrep = async (schema) => {
             .format("hh:mmA");
         }
 
-        console.log("key", normalizedUserHour, "province:", userProvince);
+        console.log(
+          "user",
+          userEmail,
+          "key",
+          normalizedUserHour,
+          "province:",
+          userProvince
+        );
         usersToBook[normalizedUserHour].push(userToBook);
       }
     }
