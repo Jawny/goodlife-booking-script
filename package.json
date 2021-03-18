@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/Jawny/goodlife-autobook-script#readme",
   "dependencies": {
-    "axios": "^0.21.0",
+    "axios": "^0.21.1",
     "cryptr": "^6.0.2",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
@@ -30,7 +30,8 @@
     "moment-timezone": "^0.5.33",
     "mongodb": "^3.6.3",
     "mongoose": "^5.10.13",
-    "node-cron": "^2.0.3"
+    "node-cron": "^2.0.3",
+    "socks-proxy-agent": "^5.0.0"
   },
   "devDependencies": {
     "eslint": "^7.20.0"

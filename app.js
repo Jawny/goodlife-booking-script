@@ -31,23 +31,6 @@ const server = async () => {
   app = express();
 
   let preppedObj = await preBookPrep(userDataSchema);
-  // const test = [
-  //   {
-  //     cookie: "cookie",
-  //     timeSlot: "123",
-  //     clubId: "1231",
-  //     userhour: "01:15am",
-  //     userProvince: "BC",
-  //   },
-  // ];
-  // filterPreBookPrep(test, moment());
-  // setTimeout(function () {
-  //   // console.log(preppedObj);
-  //   const currTime = moment().tz("America/Los_Angeles").format("hh:mmA");
-  //   console.log(
-  //     `Booking at ${currTime} for ${preppedObj["06:00AM"].length} users`
-  //   );
-  // }, 10000);
 
   // Login and generate array of users at 12am
   cron.schedule(
