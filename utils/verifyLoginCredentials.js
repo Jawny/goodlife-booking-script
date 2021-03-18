@@ -1,4 +1,4 @@
-require("dotenv").config();
+require("dotenv").config({ path: "../.env" });
 const axios = require("axios");
 const FormData = require("form-data");
 const { goodlifeUrl } = require("../constants");
@@ -16,7 +16,7 @@ const verifyLoginCredentials = async (username, password) => {
     url: process.env.PROXY || url,
     data: loginFormData,
     headers: {
-      Authorization: "hi",
+      Authorization: process.env.PROXY_AUTH || "",
       "content-type": `multipart/form-data; boundary=${loginFormData._boundary}`,
     },
   }).catch((err) => {
