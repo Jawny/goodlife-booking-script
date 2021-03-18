@@ -27,11 +27,10 @@ mongoose.connect(
   { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false }
 );
 
-const server = () => {
+const server = async () => {
   app = express();
 
-  let prePrepArray;
-  let filteredPrePrepArray;
+  let preppedObj = await preBookPrep(userDataSchema);
   // const test = [
   //   {
   //     cookie: "cookie",
@@ -42,24 +41,77 @@ const server = () => {
   //   },
   // ];
   // filterPreBookPrep(test, moment());
+  // setTimeout(function () {
+  //   // console.log(preppedObj);
+  //   const currTime = moment().tz("America/Los_Angeles").format("hh:mmA");
+  //   console.log(
+  //     `Booking at ${currTime} for ${preppedObj["06:00AM"].length} users`
+  //   );
+  // }, 10000);
 
-  // Login and generate array of users our users at 9am utc or 4am est (arbitrary time)
-  cron.schedule("0 9 * * *", () => {
-    prePrepArray = preBookPrep(userDataSchema);
-  });
+  // Login and generate array of users at 12am
+  cron.schedule(
+    "12 0-23 * * *",
+    async () => {
+      console.log("preparing data");
+      preppedObj = await preBookPrep(userDataSchema);
+    },
+    { timezone: "America/Los_Angeles" }
+  );
 
-  // Run every 13 minutes after 10am utc or 5am est
-  cron.schedule("*/13 10 * * *", async () => {
-    filteredPrePrepArray = await filterPreBookPrep(prePrepArray);
-    // await mongoose.disconnect();
-  });
+  // Run every hour starting from 1am
+  cron.schedule(
+    "0 1-23 * * *",
+    async () => {
+      const currTime = moment().tz("America/Los_Angeles").format("hh:mmA");
+      console.log(
+        `Booking at ${currTime} for ${preppedObj[currTime].length} users`
+      );
+      await bookUsers(preppedObj[currTime]);
+      // await mongoose.disconnect();
+    },
+    { timezone: "America/Los_Angeles" }
+  );
 
-  // Run every 15 minutes after 10am utc or 5am est
-  cron.schedule("*/15 10 * * *", async () => {
-    await bookUsers(filteredPrePrepArray);
-    // await mongoose.disconnect();
-  });
+  // Run every 15 minutes after every hour starting from 1am
+  cron.schedule(
+    "15 1-23 * * *",
+    async () => {
+      const currTime = moment().tz("America/Los_Angeles").format("hh:mmA");
+      console.log(
+        `Booking at ${currTime} for ${preppedObj[currTime].length} users`
+      );
+      await bookUsers(preppedObj[currTime]);
+      // await mongoose.disconnect();
+    },
+    { timezone: "America/Los_Angeles" }
+  );
 
+  cron.schedule(
+    "30 1-23 * * *",
+    async () => {
+      const currTime = moment().tz("America/Los_Angeles").format("hh:mmA");
+      console.log(
+        `Booking at ${currTime} for ${preppedObj[currTime].length} users`
+      );
+      await bookUsers(preppedObj[currTime]);
+      // await mongoose.disconnect();
+    },
+    { timezone: "America/Los_Angeles" }
+  );
+
+  cron.schedule(
+    "45 1-23 * * *",
+    async () => {
+      const currTime = moment().tz("America/Los_Angeles").format("hh:mmA");
+      console.log(
+        `Booking at ${currTime} for ${preppedObj[currTime].length} users`
+      );
+      await bookUsers(preppedObj[currTime]);
+      // await mongoose.disconnect();
+    },
+    { timezone: "America/Los_Angeles" }
+  );
   console.log(`server started on port ${PORT}`);
   app.listen(PORT);
 };
