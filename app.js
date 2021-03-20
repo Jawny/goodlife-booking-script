@@ -28,7 +28,7 @@ mongoose.connect(
 );
 
 const server = async () => {
-  app = express();
+  const app = express();
 
   let preppedObj = await preBookPrep(userDataSchema);
   // const test = [
@@ -49,17 +49,27 @@ const server = async () => {
   //   );
   // }, 10000);
 
-  // Login and generate array of users at 12am
+  // Login and generate array of users every 12th min of every hour
+  // cron.schedule(
+  //   "12 0-23 * * *",
+  //   async () => {
+  //     console.log("preparing data");
+  //     preppedObj = await preBookPrep(userDataSchema);
+  //   },
+  //   { timezone: "America/Los_Angeles" }
+  // );
+
+  // Run every hour
   cron.schedule(
-    "12 0-23 * * *",
+    "55 0-23 * * *",
     async () => {
+      const currTime = moment().tz("America/Los_Angeles");
       console.log("preparing data");
-      preppedObj = await preBookPrep(userDataSchema);
+      preppedObj = await preBookPrep(userDataSchema, currTime);
     },
     { timezone: "America/Los_Angeles" }
   );
 
-  // Run every hour starting from 1am
   cron.schedule(
     "0 1-23 * * *",
     async () => {
@@ -73,7 +83,17 @@ const server = async () => {
     { timezone: "America/Los_Angeles" }
   );
 
-  // Run every 15 minutes after every hour starting from 1am
+  // Run every 15 minutes after every hour
+  cron.schedule(
+    "10 0-23 * * *",
+    async () => {
+      console.log("preparing data");
+      const currTime = moment().tz("America/Los_Angeles");
+      preppedObj = await preBookPrep(userDataSchema, currTime);
+    },
+    { timezone: "America/Los_Angeles" }
+  );
+
   cron.schedule(
     "15 1-23 * * *",
     async () => {
@@ -87,6 +107,17 @@ const server = async () => {
     { timezone: "America/Los_Angeles" }
   );
 
+  // Run every 30 minutes after every hour
+  cron.schedule(
+    "25 0-23 * * *",
+    async () => {
+      const currTime = moment().tz("America/Los_Angeles");
+      console.log("preparing data");
+      preppedObj = await preBookPrep(userDataSchema, currTime);
+    },
+    { timezone: "America/Los_Angeles" }
+  );
+
   cron.schedule(
     "30 1-23 * * *",
     async () => {
@@ -96,6 +127,17 @@ const server = async () => {
       );
       await bookUsers(preppedObj[currTime]);
       // await mongoose.disconnect();
+    },
+    { timezone: "America/Los_Angeles" }
+  );
+
+  // Run every 45 minutes after every hour
+  cron.schedule(
+    "40 0-23 * * *",
+    async () => {
+      const currTime = moment().tz("America/Los_Angeles");
+      console.log("preparing data");
+      preppedObj = await preBookPrep(userDataSchema, currTime);
     },
     { timezone: "America/Los_Angeles" }
   );

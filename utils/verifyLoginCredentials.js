@@ -17,6 +17,7 @@ const verifyLoginCredentials = async (username, password) => {
       "content-type": `multipart/form-data; boundary=${loginFormData._boundary}`,
     },
   }).catch((err) => {
+    console.log("login error:", err);
     return err.response;
   });
 };
