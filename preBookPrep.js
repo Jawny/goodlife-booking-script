@@ -120,13 +120,13 @@ const preBookPrep = async (schema, currTime = null) => {
         const nextBookingTimeKey = moment(nextBookingTime)
           .tz("America/Los_Angeles")
           .format("hh:mmA");
-        console.log(remainder, nextBookingTimeKey);
-        console.log(
-          userhourKey != nextBookingTimeKey,
-          userhourKey,
-          nextBookingTimeKey
-        );
+
         if (userhourKey != nextBookingTimeKey) {
+          console.log(
+            userhourKey != nextBookingTimeKey,
+            userhourKey,
+            nextBookingTimeKey
+          );
           continue;
         }
       }

@@ -18,6 +18,7 @@ const bookWorkout = async (cookies, timeSlotId, clubId, retries = 0) => {
       "content-type": `multipart/form-data; boundary=${bookingDataForm._boundary}`,
     },
   }).catch((err) => {
+    console.log("booking error", err);
     return err.response;
   });
 };
